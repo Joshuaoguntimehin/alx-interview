@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""initally sation"""
 def canUnlockAll(boxes):
     """Track if each box is unlocked"""
     n = len(boxes)  # Total number of boxes

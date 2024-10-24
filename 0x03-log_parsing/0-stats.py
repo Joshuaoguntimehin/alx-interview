@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 
-""" Initialize total file size and status code counts"""
+'''Initialize total file size and status code counts'''
 total_size = 0
 status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
 line_count = 0  # To track every 10 lines
@@ -41,7 +41,4 @@ try:
 except KeyboardInterrupt:
     # Handle keyboard interruption gracefully
     print_stats()
-    sys.exit(0)  # Exit cleanly
-
-            
-        
+    sys.exit(0)  # Exit cleanly without traceback

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""import statement"""
 import sys
 
 total_size = 0 

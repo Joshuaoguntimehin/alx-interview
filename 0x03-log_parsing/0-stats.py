@@ -3,6 +3,8 @@
 import sys
 import re
 """import statement"""
+
+
 def initialize_log():
     """Initialize the metrics."""
     status_codes = {200, 301, 400, 401, 403, 404, 405, 500}
@@ -12,10 +14,11 @@ def initialize_log():
     }
     return log
 
+
 def parse_line(line, regex, log):
     """Parse each line and update log metrics."""
     match = regex.match(line)
-    
+
     if match:
         stat_code, file_size = match.group(1, 2)
         log["file_size"] += int(file_size)
@@ -23,14 +26,16 @@ def parse_line(line, regex, log):
         if stat_code in log["code_list"]:
             log["code_list"][stat_code] += 1
 
+
 def print_log(log):
     """Print the accumulated log metrics."""
     print("File size: {}".format(log['file_size']))
-    
+
     sorted_codes = sorted(log["code_list"].items())
     for code, count in sorted_codes:
         if count > 0:
             print(f"{code}: {count}")
+
 
 def main():
     """Main function to process input lines."""
@@ -57,6 +62,7 @@ def main():
         raise
 
     print_log(log)
+
 
 if __name__ == "__main__":
     main()

@@ -1,64 +1,61 @@
 #!/usr/bin/env python3
 import sys
-from signal import signal, SIGINT
-"""Initialize metrics"""
-total_file_size = 0
-status_counts = {code: 0 for code in [200, 301, 400, 401, 403, 404, 405, 500]}
-line_count = 0
+import re
 
-def print_stats():
-    """Print the statistics collected so far."""
-    print(f"File size: {total_file_size}")
-    for code in sorted(status_counts):
-        if status_counts[code] > 0:
-            print(f"{code}: {status_counts[code]}")
+def initialize_log():
+    """Initialize the metrics."""
+    status_codes = {200, 301, 400, 401, 403, 404, 405, 500}
+    log = {
+        "file_size": 0,
+        "code_list": {str(code): 0 for code in status_codes}
+    }
+    return log
 
-def handle_exit(signal_received, frame):
-    """Handle keyboard interruption (CTRL + C)."""
-    print_stats()
-    sys.exit(0)
+def parse_line(line, regex, log):
+    """Parse each line and update log metrics."""
+    match = regex.match(line)
+    
+    if match:
+        stat_code, file_size = match.group(1, 2)
+        log["file_size"] += int(file_size)
 
-"""Register SIGINT handler for graceful exit"""
-signal(SIGINT, handle_exit)
+        if stat_code in log["code_list"]:
+            log["code_list"][stat_code] += 1
 
-try:
-    for line in sys.stdin:
-        parts = line.split()
-        """Ensure the line format matches the expected structure"""
-        if len(parts) < 7:
-            continue
+def print_log(log):
+    """Print the accumulated log metrics."""
+    print("File size: {}".format(log['file_size']))
+    
+    sorted_codes = sorted(log["code_list"].items())
+    for code, count in sorted_codes:
+        if count > 0:
+            print(f"{code}: {count}")
 
-        try:
-            """Extract relevant parts from the line"""
-            ip_address = parts[0]
-            date = parts[3] + " " + parts[4]
-            method = parts[5][1:]
-            path = parts[6]
-            status_code = int(parts[-2])
-            file_size = int(parts[-1])
+def main():
+    """Main function to process input lines."""
+    regex = re.compile(
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} - '
+        r'\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] '
+        r'"GET /projects/260 HTTP/1\.1" (\d{3}) (\d+)'
+    )
 
-            # Validate method and path
-            if method != "GET" or path != "/projects/260":
-                continue
+    log = initialize_log()
+    line_count = 0
 
-            # Update metrics
-            total_file_size += file_size
-            if status_code in status_counts:
-                status_counts[status_code] += 1
-
+    try:
+        for line in sys.stdin:
+            line = line.strip()
+            parse_line(line, regex, log)
             line_count += 1
 
-            # Print statistics after every 10 lines
             if line_count % 10 == 0:
-                print_stats()
-        except (ValueError, IndexError):
-            # Skip lines with parsing errors
-            continue
+                print_log(log)
 
-    """ Print remaining statistics at the end"""
-    print_stats()
+    except KeyboardInterrupt:
+        print_log(log)
+        raise
 
-except KeyboardInterrupt:
-    # Handle CTRL + C
-    print_stats()
-    sys.exit(0)
+    print_log(log)
+
+if __name__ == "__main__":
+    main()

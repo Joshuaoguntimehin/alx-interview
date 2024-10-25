@@ -18,18 +18,18 @@ def handle_exit(signal_received, frame):
     print_stats()
     sys.exit(0)
 
-# Register SIGINT handler for graceful exit
+"""Register SIGINT handler for graceful exit"""
 signal(SIGINT, handle_exit)
 
 try:
     for line in sys.stdin:
         parts = line.split()
-        # Ensure the line format matches the expected structure
+        """Ensure the line format matches the expected structure"""
         if len(parts) < 7:
             continue
 
         try:
-            # Extract relevant parts from the line
+            """Extract relevant parts from the line"""
             ip_address = parts[0]
             date = parts[3] + " " + parts[4]
             method = parts[5][1:]
@@ -55,7 +55,7 @@ try:
             # Skip lines with parsing errors
             continue
 
-    # Print remaining statistics at the end
+    """ Print remaining statistics at the end"""
     print_stats()
 
 except KeyboardInterrupt:

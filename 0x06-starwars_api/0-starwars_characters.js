@@ -8,7 +8,7 @@ if (!movieId) {
   process.exit(1);
 }
 
-const movieUrl = `https://swapi.dev/api/films/${movieId}/`;
+const movieUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
 request(movieUrl, (error, response, body) => {
   if (error) {

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """import statement"""
 
+
 def validUTF8(data):
     bytes_remaining = 0
     

@@ -1,7 +1,5 @@
 #!/usr/bin/node
-"""
-importst
-"""
+
 const request = require('request');
 const movieId = process.argv[2];
 

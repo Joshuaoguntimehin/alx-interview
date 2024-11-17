@@ -47,4 +47,3 @@ request(movieUrl, (error, response, body) => {
     console.error('Error parsing movie data:', parseError);
   }
 });
-

@@ -1,5 +1,4 @@
 #!/usr/bin/node
-
 const request = require('request');
 const movieId = process.argv[2];
 
@@ -16,18 +15,36 @@ request(movieUrl, (error, response, body) => {
     return;
   }
 
-  const movieData = JSON.parse(body);
-  const characters = movieData.characters;
+  try {
+    const movieData = JSON.parse(body);
+    const characters = movieData.characters;
 
-  characters.forEach((characterUrl) => {
-    request(characterUrl, (charError, charResponse, charBody) => {
-      if (charError) {
-        console.error('Error fetching character data:', charError);
-        return;
-      }
+    // Use Promise.all to ensure correct order
+    const characterPromises = characters.map((characterUrl) => {
+      return new Promise((resolve, reject) => {
+        request(characterUrl, (charError, charResponse, charBody) => {
+          if (charError) {
+            reject(charError);
+            return;
+          }
 
-      const characterData = JSON.parse(charBody);
-      console.log(characterData.name);
+          try {
+            const characterData = JSON.parse(charBody);
+            resolve(characterData.name);
+          } catch (parseError) {
+            reject(parseError);
+          }
+        });
+      });
     });
-  });
+
+    Promise.all(characterPromises)
+      .then((names) => {
+        names.forEach((name) => console.log(name));
+      })
+      .catch((err) => console.error('Error fetching character data:', err));
+  } catch (parseError) {
+    console.error('Error parsing movie data:', parseError);
+  }
 });
+

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""function to  find winner"""
 def isWinner(x, nums):
     """Determine the winner of the game after x rounds."""
     if x < 1 or not nums:
